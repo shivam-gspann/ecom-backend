@@ -5,7 +5,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -15,10 +15,10 @@ app.use(express.static("public"));
 
 //importing routes
 import healthCheckRouter from "./routes/healthCheck.routes.js";
-import userRouter from "./routes/user.routes.js";
+import authRouter from "./routes/auth.routes.js";
 
 //routes declaration
 app.use("/healthcheck", healthCheckRouter);
-app.use("/users", userRouter);
+app.use("/auth", authRouter);
 
 export default app;

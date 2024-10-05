@@ -1,16 +1,9 @@
 import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt"
 
 const userSchema = new Schema(
   {
-    username: {
-      type: String,
-      required: [true, "username is required"],
-      unique: [true, "username already exists"],
-      lowercase: true,
-      trim: true,
-      index: true,
-    },
-    fullName: {
+    name: {
       type: String,
       required: [true, "fullname is required"],
       trim: true,
@@ -32,5 +25,20 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+//mongoose hooks used to perform action before saving data into databse
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+//creating mongoose method to check password (like find(),etc...)
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 export const User = mongoose.model("User", userSchema);
